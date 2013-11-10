@@ -47,4 +47,5 @@ love:
 
 # DO NOT DELETE
 
-riff.o: riff.h
+riff.o: riff.h littleendian.h
+wavinfo.o: riff.h

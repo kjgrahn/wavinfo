@@ -36,5 +36,9 @@ int main(void)
     std::cin.sync_with_stdio(false);
     std::cout.sync_with_stdio(false);
 
-    return riff(std::cout, std::cin);
+    const Wave w = riff(std::cin);
+    std::cout << "fmt  " << w.fmt.size() << '\n'
+	      << "bext " << w.bext.size() << '\n';
+
+    return w.fmt.empty()? 1: 0;
 }

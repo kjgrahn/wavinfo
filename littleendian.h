@@ -1,6 +1,6 @@
 /* -*- c++ -*-
  *
- * Copyright (c) 1999--2001, 2013 Jörgen Grahn
+ * Copyright (c) 2013 Jörgen Grahn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,21 +25,28 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef WAVINFO_RIFF_H
-#define WAVINFO_RIFF_H
+#ifndef WAVINFO_LITTLEENDIAN_H
+#define WAVINFO_LITTLEENDIAN_H
 
-#include <iosfwd>
-#include <vector>
+#include <stdint.h>
 
 
-/**
- * The interesting (to me) parts of a WAVE file.
- */
-struct Wave {
-    std::vector<char> fmt;
-    std::vector<char> bext;
-};
+namespace le {
 
-Wave riff(std::istream& is);
+    inline unsigned read16(const char* s)
+    {
+	const uint8_t* u = reinterpret_cast<const uint8_t*>(s);
+	unsigned n = u[0];
+	n |= u[1] << 8;
+	return n;
+    }
+
+    inline unsigned read32(const char* s)
+    {
+	unsigned n = read16(s);
+	n |= read16(s+2) << 16;
+	return n;
+    }
+}
 
 #endif

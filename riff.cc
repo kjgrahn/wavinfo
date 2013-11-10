@@ -25,28 +25,14 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "riff.h"
+#include "littleendian.h"
 
 #include <iostream>
 #include <cassert>
-#include <stdint.h>
+
 
 
 namespace {
-
-    unsigned read16le(const char* s)
-    {
-	const uint8_t* u = reinterpret_cast<const uint8_t*>(s);
-	unsigned n = u[0];
-	n |= u[1] << 8;
-	return n;
-    }
-
-    unsigned read32le(const char* s)
-    {
-	unsigned n = read16le(s);
-	n |= read16le(s+2) << 16;
-	return n;
-    }
 
     struct Tag {
 	explicit Tag(const char* s)
@@ -69,7 +55,7 @@ namespace {
     struct TL {
 	explicit TL(const char* s)
 	    : tag(s),
-	      len(read32le(s+4))
+	      len(le::read32(s+4))
 	{}
 	Tag tag;
 	size_t len;
@@ -79,46 +65,59 @@ namespace {
     {
 	return (n%2)? n+1 : n;
     }
+
+    std::istream& read(std::istream& is, unsigned n,
+		       std::vector<char>& v, size_t vlen)
+    {
+	v.resize(n);
+	is.read(&v[0], n);
+	if(vlen < n) {
+	    v.resize(vlen);
+	}
+	return is;
+    }
 }
 
 
-int riff(std::ostream& os, std::istream& is)
+Wave riff(std::istream& is)
 {
+    Wave w;
+
     char buf[8];
     is.read(buf, 8);
     assert(is.gcount()==8);
     const TL riff(buf);
 
-    if(riff.tag != "RIFF") return 1;
-    if(riff.len < 4) return 1;
+    if(riff.tag != "RIFF") return w;
+    if(riff.len < 4) return w;
     unsigned len = riff.len;
-
-    os << riff.tag
-       << ' ' << riff.len
-       << '\n';
 
     is.read(buf, 4);
     assert(is.gcount()==4);
     len -= 4;
     const Tag wave(buf);
-    if(wave!="WAVE") return 1;
-    os << wave << '\n';
+    if(wave!="WAVE") return w;
 
     while(len >= 4+4) {
 	is.read(buf, 8);
 	assert(is.gcount()==8);
 	len -= 4+4;
 	const TL tl(buf);
-
-	os << tl.tag
-	   << ' ' << tl.len
-	   << '\n';
 	unsigned n = pad(tl.len);
-	is.ignore(n);
+
+	if(tl.tag=="fmt ") {
+	    read(is, n, w.fmt, tl.len);
+	}
+	else if(tl.tag=="bext") {
+	    read(is, n, w.bext, tl.len);
+	}
+	else {
+	    is.ignore(n);
+	}
 	assert(is.gcount()==n);
 	assert(len >= n);
 	len -= n;
     }
 
-    return 0;
+    return w;
 }
