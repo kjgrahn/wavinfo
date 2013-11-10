@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1999--2001, 2013 Jörgen Grahn
+ * Copyright (c) 2013 Jörgen Grahn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,6 +25,7 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "riff.h"
+#include "fmt.h"
 
 #include <iostream>
 #include <cassert>
@@ -38,7 +39,13 @@ int main(void)
 
     const Wave w = riff(std::cin);
     std::cout << "fmt  " << w.fmt.size() << '\n'
-	      << "bext " << w.bext.size() << '\n';
+	      << "bext " << w.bext.size() << '\n'
+	      << "data " << w.datasize << '\n';
+
+    Fmt fmt;
+    if(!w.fmt.empty() && parse(fmt, w.fmt)) {
+	std::cout << fmt << '\n';
+    }
 
     return w.fmt.empty()? 1: 0;
 }

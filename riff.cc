@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1999--2001, 2013 Jörgen Grahn
+ * Copyright (c) 2013 Jörgen Grahn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -110,6 +110,10 @@ Wave riff(std::istream& is)
 	}
 	else if(tl.tag=="bext") {
 	    read(is, n, w.bext, tl.len);
+	}
+	else if(tl.tag=="data") {
+	    w.datasize += tl.len;
+	    is.ignore(n);
 	}
 	else {
 	    is.ignore(n);

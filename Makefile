@@ -13,6 +13,7 @@ version.c: Makefile mkversion
 	./mkversion groblad_{name=Groblad,version=3.3,prefix=$(INSTALLBASE)} $@
 
 libwavinfo.a: riff.o
+libwavinfo.a: fmt.o
 	$(AR) -r $@ $^
 
 wavinfo: wavinfo.o libwavinfo.a
@@ -47,5 +48,6 @@ love:
 
 # DO NOT DELETE
 
+fmt.o: fmt.h littleendian.h
 riff.o: riff.h littleendian.h
-wavinfo.o: riff.h
+wavinfo.o: riff.h fmt.h

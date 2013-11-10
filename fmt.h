@@ -25,23 +25,26 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef WAVINFO_RIFF_H
-#define WAVINFO_RIFF_H
+#ifndef WAVINFO_FMT_H
+#define WAVINFO_FMT_H
 
-#include <iosfwd>
 #include <vector>
-
+#include <iosfwd>
 
 /**
- * The interesting (to me) parts of a WAVE file.
+ * Information from a basic WAVE "fmt " chunk.
  */
-struct Wave {
-    Wave() : datasize(0) {}
-    std::vector<char> fmt;
-    std::vector<char> bext;
-    unsigned datasize;
+struct Fmt {
+    unsigned wFormatTag;
+    unsigned nChannels;
+    unsigned nSamplesPerSec;
+    unsigned nAvgBytesPerSec;
+    unsigned nBlockAlign;
+    unsigned wBitsPerSample;
 };
 
-Wave riff(std::istream& is);
+bool parse(Fmt& fmt, const std::vector<char>& v);
+
+std::ostream& operator<< (std::ostream& os, const Fmt& val);
 
 #endif

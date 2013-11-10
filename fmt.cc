@@ -1,5 +1,4 @@
-/* -*- c++ -*-
- *
+/*
  * Copyright (c) 2013 Jörgen Grahn
  * All rights reserved.
  *
@@ -25,23 +24,41 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef WAVINFO_RIFF_H
-#define WAVINFO_RIFF_H
+#include "fmt.h"
+#include "littleendian.h"
 
-#include <iosfwd>
-#include <vector>
+#include <iostream>
+
+namespace {
+
+    bool parse(Fmt& fmt, const char* v)
+    {
+	using namespace le;
+
+	fmt.wFormatTag = read16(v); v+=2;
+	fmt.nChannels = read16(v); v+=2;
+	fmt.nSamplesPerSec = read32(v); v+=4;
+	fmt.nAvgBytesPerSec = read32(v); v+=4;
+	fmt.nBlockAlign = read16(v); v+=2;
+	fmt.wBitsPerSample = read16(v); v+=2;
+	return true;
+    }
+}
 
 
-/**
- * The interesting (to me) parts of a WAVE file.
- */
-struct Wave {
-    Wave() : datasize(0) {}
-    std::vector<char> fmt;
-    std::vector<char> bext;
-    unsigned datasize;
-};
+bool parse(Fmt& fmt, const std::vector<char>& v)
+{
+    return v.size()<16 ? false : parse(fmt, &v[0]);
+}
 
-Wave riff(std::istream& is);
 
-#endif
+std::ostream& operator<< (std::ostream& os, const Fmt& val)
+{
+    return os << '[' << val.wFormatTag
+	      << ' ' << val.nChannels
+	      << ' ' << val.nSamplesPerSec
+	      << ' ' << val.nAvgBytesPerSec
+	      << ' ' << val.nBlockAlign
+	      << ' ' << val.wBitsPerSample
+	      << ']';
+}
