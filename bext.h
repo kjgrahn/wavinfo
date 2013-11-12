@@ -1,4 +1,5 @@
-/*
+/* -*- c++ -*-
+ *
  * Copyright (c) 2013 Jörgen Grahn
  * All rights reserved.
  *
@@ -24,34 +25,39 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "riff.h"
-#include "fmt.h"
-#include "bext.h"
+#ifndef WAVINFO_BEXT_H
+#define WAVINFO_BEXT_H
 
-#include <iostream>
-#include <cassert>
+#include <vector>
+#include <string>
+#include <iosfwd>
 #include <stdint.h>
 
+/**
+ * Information from a WAVE "bext" chunk, according to
+ * http://tech.ebu.ch/docs/tech/tech3285.pdf
+ */
+struct Bext {
+    std::string description;
+    std::string originator;
+    std::string ref;
+    std::string date;
+    std::string time;
+    uint64_t time_reference;
+    unsigned version;
+    std::vector<uint8_t> umid;
+    struct {
+	float value;
+	float range;
+	float max_true_peak;
+	float max_momentary_loudness;
+	float max_short_term_loudness;
+    } loudness;
+    std::string history;
+};
 
-int main(void)
-{
-    std::cin.sync_with_stdio(false);
-    std::cout.sync_with_stdio(false);
+bool parse(Bext& bext, const std::vector<char>& v);
 
-    const Wave w = riff(std::cin);
-    std::cout << "fmt  " << w.fmt.size() << '\n'
-	      << "bext " << w.bext.size() << '\n'
-	      << "data " << w.datasize << '\n';
+std::ostream& operator<< (std::ostream& os, const Bext& val);
 
-    Fmt fmt;
-    if(!w.fmt.empty() && parse(fmt, w.fmt)) {
-	std::cout << fmt << '\n';
-    }
-
-    Bext bext;
-    if(!w.bext.empty() && parse(bext, w.bext)) {
-	std::cout << bext;
-    }
-
-    return w.fmt.empty()? 1: 0;
-}
+#endif

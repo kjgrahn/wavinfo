@@ -14,6 +14,7 @@ version.c: Makefile mkversion
 
 libwavinfo.a: riff.o
 libwavinfo.a: fmt.o
+libwavinfo.a: bext.o
 	$(AR) -r $@ $^
 
 wavinfo: wavinfo.o libwavinfo.a
