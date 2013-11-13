@@ -1,0 +1,114 @@
+.ss 12 0
+.de BP
+.IP \\fB\\$*
+..
+.
+.ds wav \s-2WAV\s0
+.
+.TH wavinfo 1 "NOV 2013" WAVINFO "User Manuals"
+.SH "NAME"
+wavinfo \- show metadata for WAV files, and rename them
+.
+.SH "SYNOPSIS"
+.B wavinfo
+.RB [ \-v ]
+.I file
+\&...
+.br
+.B wavinfo
+.B \-e
+.I file
+\&...
+.br
+.B wavinfo --version
+.br
+.B wavinfo --help
+.
+.SH "DESCRIPTION"
+.BR wavinfo 's
+main purpose is to do for sound samples roughly what
+.BR olymp (1)
+does for photos:
+.IP \- 3x
+To let you maintain a collection of sound samples over time and for archival.
+.IP \-
+To have the creation date reflected in the file name.
+.IP \-
+To have a way to avoid file naming conflicts.
+.IP \-
+To let you maintain an annotated index to the samples as a text file.
+.
+.PP
+A secondary purpose is to display the metadata of a \*[wav] file.
+Tools like
+.BR sox (1)
+can display standard \*[wav] metadata, but I am aware of no tools which
+parse the
+.B bext
+metadata when available.
+.
+.SH "OPTIONS"
+.
+.BP \-v
+.
+.BP \-e
+.
+.BP --version
+Print version information and exit.
+.BP --help
+Print a brief help text and exit.
+.
+.SH "FILE FORMATS"
+.B wavinfo
+currently works only with \*[wav] (Microsoft WAVE) files.
+It uses these sources of information:
+.
+.IP \- 3x
+The file name, for serial numbers.
+.IP \-
+The standard \*[wav] metadata, for calculating the duration in seconds.
+.IP \-
+The
+.B bext
+chunk defined by the
+.IR "European Broadcasting Union" ,
+for the date and time of the sample. This happens to be what my equipment (a
+.IR "ZOOM Handy Recorder H1" )
+uses for metadata.
+.IP
+The presence of this chunk turns the \*[wav] file into a
+.I "Broadcast Wave Format"
+or
+.I BWF
+file; however,
+such a file tends to be recognized by tools simply as a \*[wav] file.
+The metadata stored here includes many other pieces of information such
+as description, reference and coding history, but my equipment leaves
+these fields blank or fills them with unhelpful information.
+The serial number in particular is only present in the file name.
+.
+.PP
+There are other ways to encode metadata into a \*[wav] file, but I have
+not encountered them and thus have no need to support them.
+I barely need to support
+.I this
+one \- the information I need is date and time, and the timestamp
+of the file is just marginally less trustworthy than the one encoded
+into the file itself.
+(The metadata would have been much more reliable if it had been encoded
+in a marginally sane way, but in
+.B bext
+it's expressed as local time without time zone
+information, predictably causing problems with DST and travels across
+time zones.)
+.
+.SH "LICENSE"
+Modified BSD.
+.
+.SH "AUTHOR"
+J\(:orgen Grahn
+.IR \[fo]grahn+src@snipabacken.se\[fc] .
+.
+.SH "SEE ALSO"
+.BR olymp (1),
+.BR sox (1).
