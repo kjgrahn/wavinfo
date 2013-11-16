@@ -29,24 +29,114 @@
 #include "bext.h"
 
 #include <iostream>
+#include <fstream>
+#include <getopt.h>
 #include <cassert>
 #include <stdint.h>
 
 
-int main(void)
+namespace {
+
+    const char* version()
+    {
+	return "1.0";
+    }
+}
+
+
+int main(int argc, char ** argv)
 {
+    using std::string;
+
+    const string prog = argv[0];
+    const string usage = string("usage: ")
+	+ prog + " [-v] file ...\n"
+	"       "
+	+ prog + " -e file ...\n"
+	"       "
+	+ prog + " --version\n"
+	"       "
+	+ prog + " --help";
+    const char optstring[] = "ve";
+    const struct option long_options[] = {
+	{"version", 0, 0, 'V'},
+	{"help", 0, 0, 'H'},
+	{0, 0, 0, 0}
+    };
+
     std::cin.sync_with_stdio(false);
     std::cout.sync_with_stdio(false);
+
+    bool verbose = false;
+    bool rename = false;
+
+    int ch;
+    while((ch = getopt_long(argc, argv,
+			    optstring,
+			    &long_options[0], 0)) != -1) {
+	switch(ch) {
+	case 'v':
+	    verbose = true;
+	    rename = false;
+	    break;
+	case 'e':
+	    verbose = false;
+	    rename = true;
+	    break;
+	case 'V':
+	    std::cout << prog << ' ' << version() << '\n'
+		      << "Copyright (c) 2013 Jörgen Grahn\n";
+	    return 0;
+	    break;
+	case 'H':
+	    std::cout << usage << '\n';
+	    return 0;
+	    break;
+	case ':':
+	case '?':
+	    std::cerr << usage << '\n';
+	    return 1;
+	    break;
+	default:
+	    break;
+	}
+    }
+
+    if(argv+optind == argv+argc) {
+	std::cerr << usage << '\n';
+	return 1;
+    }
+
+    const bool onefile = (argv+optind+1 == argv+argc);
+
+    char** p = argv+optind;
+    while(p != argv+argc) {
+	const bool first = (p==argv+optind);
+	const char* const filename = *p++;
+
+	std::ifstream is(filename);
+	const Wave w = riff(is);
+
+	if(!onefile) {
+	    std::cout << filename << ": ";
+	}
+
+	Fmt fmt;
+	if(!w.fmt.empty() && parse(fmt, w.fmt)) {
+	    std::cout << fmt << '\n';
+	}
+	else {
+	    std::cout << '\n';
+	}
+    }
+
+    return 0;
 
     const Wave w = riff(std::cin);
     std::cout << "fmt  " << w.fmt.size() << '\n'
 	      << "bext " << w.bext.size() << '\n'
 	      << "data " << w.datasize << '\n';
 
-    Fmt fmt;
-    if(!w.fmt.empty() && parse(fmt, w.fmt)) {
-	std::cout << fmt << '\n';
-    }
 
     Bext bext;
     if(!w.bext.empty() && parse(bext, w.bext)) {
