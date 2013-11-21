@@ -26,6 +26,7 @@
  */
 #include "riff.h"
 #include "littleendian.h"
+#include "fmt.h"
 
 #include <iostream>
 #include <cassert>
@@ -124,4 +125,20 @@ Wave riff(std::istream& is)
     }
 
     return w;
+}
+
+
+/**
+ * The duration of the sample, rounded to whole seconds.
+ */
+unsigned Wave::duration() const
+{
+    Fmt f;
+    if(!parse(f, fmt)) return 0;
+    const unsigned bytes_per_sec = f.nSamplesPerSec * f.nChannels * f.wBitsPerSample / 8;
+
+    double s = datasize;
+    s = s / bytes_per_sec;
+
+    return s+.5;
 }

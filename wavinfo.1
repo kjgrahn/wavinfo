@@ -29,7 +29,7 @@ wavinfo \- show metadata for WAV files, and rename them
 main purpose is to do for sound samples roughly what
 .BR olymp (1)
 does for photos:
-.IP \- 3x
+.IP \- 2m
 To let you maintain a collection of sound samples over time and for archival.
 .IP \-
 To have the creation date reflected in the file name.
@@ -50,8 +50,20 @@ metadata when available.
 .SH "OPTIONS"
 .
 .BP \-v
+Print all recognized metadata, and specifically the BWF data (see below).
+By default only a small vital subset is printed: date, time and duration.
 .
 .BP \-e
+Rename the files so they are named by date and serial number, where the serial number
+is a sequence of digits from the original file name.
+For example,
+.B ZOOM0007.WAV
+may be renamed to
+.BR 130608-0007.wav .
+.
+.BP
+The renaming will never cause loss of data. For example, it will be skipped if
+renaming would overwrite an existing file.
 .
 .BP --version
 Print version information and exit.
@@ -63,7 +75,7 @@ Print a brief help text and exit.
 currently works only with \*[wav] (Microsoft WAVE) files.
 It uses these sources of information:
 .
-.IP \- 3x
+.IP \- 2m
 The file name, for serial numbers.
 .IP \-
 The standard \*[wav] metadata, for calculating the duration in seconds.

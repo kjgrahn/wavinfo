@@ -1,5 +1,4 @@
-/* -*- c++ -*-
- *
+/*
  * Copyright (c) 2013 Jörgen Grahn
  * All rights reserved.
  *
@@ -25,28 +24,16 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#ifndef WAVINFO_RIFF_H
-#define WAVINFO_RIFF_H
-
-#include <iosfwd>
-#include <vector>
+#include "newname.h"
 
 
-/**
- * The interesting (to me) parts of a WAVE file.
- */
-struct Wave {
-    Wave() : datasize(0) {}
-    std::vector<char> fmt;
-    std::vector<char> bext;
-    unsigned datasize;
+std::string newname(time_t, const std::string& orig)
+{
+    return orig;
+}
 
-    bool valid() const { return !fmt.empty() && datasize; }
 
-    std::ostream& tabular(std::ostream& os) const;
-    unsigned duration() const;
-};
-
-Wave riff(std::istream& is);
-
-#endif
+std::string newname(const std::string& date, const std::string& orig)
+{
+    return orig;
+}

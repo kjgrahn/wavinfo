@@ -15,6 +15,7 @@ version.c: Makefile mkversion
 libwavinfo.a: riff.o
 libwavinfo.a: fmt.o
 libwavinfo.a: bext.o
+libwavinfo.a: newname.o
 	$(AR) -r $@ $^
 
 wavinfo: wavinfo.o libwavinfo.a
@@ -49,6 +50,8 @@ love:
 
 # DO NOT DELETE
 
+bext.o: bext.h littleendian.h
 fmt.o: fmt.h littleendian.h
-riff.o: riff.h littleendian.h
-wavinfo.o: riff.h fmt.h
+newname.o: newname.h
+riff.o: riff.h littleendian.h fmt.h
+wavinfo.o: riff.h fmt.h bext.h newname.h

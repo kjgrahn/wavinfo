@@ -27,6 +27,7 @@
 #include "riff.h"
 #include "fmt.h"
 #include "bext.h"
+#include "newname.h"
 
 #include <iostream>
 #include <fstream>
@@ -34,12 +35,20 @@
 #include <cassert>
 #include <stdint.h>
 
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 
 namespace {
 
-    const char* version()
+    time_t mtime(const char* filename)
     {
-	return "1.0";
+	struct stat buf;
+	if(stat(filename, &buf)) {
+	    return 0;
+	}
+	return buf.st_mtime;
     }
 }
 
@@ -84,7 +93,7 @@ int main(int argc, char ** argv)
 	    rename = true;
 	    break;
 	case 'V':
-	    std::cout << prog << ' ' << version() << '\n'
+	    std::cout << prog << " 1.0\n"
 		      << "Copyright (c) 2013 Jörgen Grahn\n";
 	    return 0;
 	    break;
@@ -117,31 +126,30 @@ int main(int argc, char ** argv)
 	std::ifstream is(filename);
 	const Wave w = riff(is);
 
-	if(!onefile) {
-	    std::cout << filename << ": ";
+	if(!w.valid()) {
+	    std::cerr << filename << ": not a WAVE file\n";
+	    continue;
 	}
 
-	Fmt fmt;
-	if(!w.fmt.empty() && parse(fmt, w.fmt)) {
-	    std::cout << fmt << '\n';
-	}
-	else {
-	    std::cout << '\n';
+	if(!verbose) {
+	    Bext bext;
+	    if(!w.bext.empty()) {
+		parse(bext, w.bext);
+	    }
+
+	    const string name = bext.date.empty() ?
+		newname(mtime(filename), filename) :
+		newname(bext.date, filename);
+	    std::cout << name << '\n';
+
+	    if(!bext.date.empty()) {
+		std::cout << bext.date << ' '
+			  << bext.time << '\n';
+	    }
+	    std::cout << w.duration() << " seconds\n"
+		      << '\n';
 	}
     }
 
     return 0;
-
-    const Wave w = riff(std::cin);
-    std::cout << "fmt  " << w.fmt.size() << '\n'
-	      << "bext " << w.bext.size() << '\n'
-	      << "data " << w.datasize << '\n';
-
-
-    Bext bext;
-    if(!w.bext.empty() && parse(bext, w.bext)) {
-	std::cout << bext;
-    }
-
-    return w.fmt.empty()? 1: 0;
 }
