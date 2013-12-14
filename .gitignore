@@ -1,2 +1,5 @@
 wavinfo
+tests
+test.cc
 *.[oa]
+Makefile.bak

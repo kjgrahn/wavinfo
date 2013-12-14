@@ -24,14 +24,10 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#include "newname.h"
-
 #include "basename.h"
 
 #include <algorithm>
 #include <cstring>
-#include <cctype>
-#include <cassert>
 
 
 namespace {
@@ -43,57 +39,82 @@ namespace {
     }
 
     /**
-     * The start of a trailing subsequence of [a, b) which is only
-     * digits.
+     * Trim 'c' from the end of [a, b) but don't make the range
+     * empty.  Returns the new 'b'.
      */
-    const char* digits(const char* a, const char* b)
+    const char* trim_end(const char* a, const char* b, const char c)
     {
-	const char* p = b;
-	while(a<p && std::isdigit(int(*(p-1)))) {
-	    p--;
+	while(b-a > 2) {
+	    const char* e = b-1;
+	    if(*e!=c) {
+		break;
+	    }
+	    b = e;
 	}
-	return p;
+	return b;
     }
+}
 
-    std::string name(const std::string& date,
-		     const std::string& s)
+
+namespace path {
+
+    static const std::string dot(".");
+
+    std::string dirname(const char* a, const char* b)
     {
-	std::string r = date;
-	r.push_back('-');
+	if(a==b) return dot;
 
-	const char* p = s.c_str();
-	const char* q = find_last(p, p + s.size(), '.');
-	p = digits(p, q);
-	r.append(p, q);
-	r.append(".wav");
+	b = trim_end(a, b, '/');
+	const char* c = find_last(a, b, '/');
+	if(c==b) return dot;
+	if(c==a) c++;
+	b = trim_end(a, c, '/');
 
-	return r;
+	return std::string(a, b);
     }
-}
 
+    std::string basename(const char* a, const char* b)
+    {
+	if(a==b) return dot;
 
-std::string newname(time_t, const std::string& path)
-{
-    return path;
-}
+	b = trim_end(a, b, '/');
+	const char* c = find_last(a, b, '/');
+	if(c!=b) {
+	    a = c+1;
+	}
+	return std::string(a, b);
+    }
 
+    std::string dirname(const std::string& path)
+    {
+	const char* p = path.c_str();
+	return dirname(p, p + path.size());
+    }
 
-/**
- * Assuming 'date' is an ISO date (yyyy-mm-dd) and 'path' is a valid
- * path, construct a new path where the basename is based on the date,
- * a serial number from the original path and the extension .wav,
- * e.g. 131216-0002.wav.
- */
-std::string newname(const std::string& date, const std::string& path)
-{
-    assert(date.size()==4+3+3);
-    assert(date[4]=='-');
-    assert(date[7]=='-');
-    std::string dat;
-    dat.append(date, 2, 2);
-    dat.append(date, 5, 2);
-    dat.append(date, 8, 2);
+    std::string dirname(const char* path)
+    {
+	return dirname(path, path + std::strlen(path));
+    }
 
-    const std::string dir = path::dirname(path);
-    return path::join(dir, name(dat, path::basename(path)));
+    std::string basename(const std::string& path)
+    {
+	const char* p = path.c_str();
+	return basename(p, p + path.size());
+    }
+
+    std::string basename(const char* path)
+    {
+	return basename(path, path + std::strlen(path));
+    }
+
+    std::string join(const std::string& a,
+		     const std::string& b)
+    {
+	const char* p = a.c_str();
+	const char* q = trim_end(p, p+a.size(), '/');
+	std::string s(p, q);
+	s.push_back('/');
+	s += b;
+	return s;
+    }
 }
