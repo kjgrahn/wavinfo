@@ -28,6 +28,7 @@
 #include "fmt.h"
 #include "bext.h"
 #include "newname.h"
+#include "basename.h"
 
 #include <iostream>
 #include <fstream>
@@ -140,7 +141,7 @@ int main(int argc, char ** argv)
 	    const string name = bext.date.empty() ?
 		newname(mtime(filename), filename) :
 		newname(bext.date, filename);
-	    std::cout << name << '\n';
+	    std::cout << path::basename(name) << '\n';
 
 	    if(!bext.date.empty()) {
 		std::cout << bext.date << ' '

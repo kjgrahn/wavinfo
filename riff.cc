@@ -119,7 +119,7 @@ Wave riff(std::istream& is)
 	else {
 	    is.ignore(n);
 	}
-	assert(is.gcount()==n);
+	assert(is.gcount()==std::streamsize(n));
 	assert(len >= n);
 	len -= n;
     }
