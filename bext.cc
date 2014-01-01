@@ -116,3 +116,9 @@ std::ostream& operator<< (std::ostream& os, const Bext& val)
 	      << "\nhistory     " << val.history
 	      << '\n';
 }
+
+
+std::ostream& tabular(std::ostream& os, const Bext& val)
+{
+    return os << val;
+}

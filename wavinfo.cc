@@ -51,6 +51,22 @@ namespace {
 	}
 	return buf.st_mtime;
     }
+
+
+    std::ostream& verbose_print(std::ostream& os,
+				const std::string& filename,
+				const Wave& wave)
+    {
+	os << filename << '\n';
+	wave.tabular(os);
+
+	Bext bext;
+	if(!wave.bext.empty() && parse(bext, wave.bext)) {
+	    tabular(os, bext);
+	}
+
+	return os;
+    }
 }
 
 
@@ -132,7 +148,13 @@ int main(int argc, char ** argv)
 	    continue;
 	}
 
-	if(!verbose) {
+	if(verbose) {
+	    if(!onefile && !first) {
+		std::cout << '\n';
+	    }
+	    verbose_print(std::cout, filename, w);
+	}
+	else {
 	    Bext bext;
 	    if(!w.bext.empty()) {
 		parse(bext, w.bext);

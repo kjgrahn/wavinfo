@@ -128,6 +128,37 @@ Wave riff(std::istream& is)
 }
 
 
+namespace {
+
+    template<class T>
+    void line(std::ostream& os,
+	      const char* name,
+	      const T& value,
+	      const char* suffix = "")
+    {
+	os << name << ' ' << value << suffix << '\n';
+    }
+}
+
+
+std::ostream& Wave::tabular(std::ostream& os) const
+{
+    assert(valid());
+
+    Fmt f;
+    if(valid() && parse(f, fmt)) {
+	line(os, "duration      ", duration(), " seconds");
+	line(os, "FormatTag     ", f.wFormatTag);
+	line(os, "Channels      ", f.nChannels);
+	line(os, "SamplesPerSec ", f.nSamplesPerSec);
+	line(os, "AvgBytesPerSec", f.nAvgBytesPerSec);
+	line(os, "BlockAlign    ", f.nBlockAlign);
+	line(os, "BitsPerSample ", f.wBitsPerSample);
+    }
+    return os;
+}
+
+
 /**
  * The duration of the sample, rounded to whole seconds.
  */

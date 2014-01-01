@@ -59,5 +59,6 @@ struct Bext {
 bool parse(Bext& bext, const std::vector<char>& v);
 
 std::ostream& operator<< (std::ostream& os, const Bext& val);
+std::ostream& tabular(std::ostream& os, const Bext& val);
 
 #endif
