@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013 Jörgen Grahn
+ * Copyright (c) 2013, 2014 Jörgen Grahn
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,7 @@
 #include "bext.h"
 #include "newname.h"
 #include "basename.h"
+#include "mv.h"
 
 #include <iostream>
 #include <fstream>
@@ -133,6 +134,7 @@ int main(int argc, char ** argv)
 	return 1;
     }
 
+    int rc = 0;
     const bool onefile = (argv+optind+1 == argv+argc);
 
     char** p = argv+optind;
@@ -171,8 +173,12 @@ int main(int argc, char ** argv)
 	    }
 	    std::cout << w.duration() << " seconds\n"
 		      << '\n';
+
+	    if(rename && !mv(std::cerr, filename, name)) {
+		rc = 1;
+	    }
 	}
     }
 
-    return 0;
+    return rc;
 }

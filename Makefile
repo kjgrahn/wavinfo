@@ -18,6 +18,7 @@ libwavinfo.a: fmt.o
 libwavinfo.a: bext.o
 libwavinfo.a: newname.o
 libwavinfo.a: basename.o
+libwavinfo.a: mv.o
 	$(AR) -r $@ $^
 
 wavinfo: wavinfo.o libwavinfo.a
@@ -74,7 +75,9 @@ love:
 basename.o: basename.h
 bext.o: bext.h littleendian.h
 fmt.o: fmt.h littleendian.h
-newname.o: newname.h
+mv.o: mv.h basename.h
+newname.o: newname.h basename.h
 riff.o: riff.h littleendian.h fmt.h
-wavinfo.o: riff.h fmt.h bext.h newname.h
+wavinfo.o: riff.h fmt.h bext.h newname.h basename.h mv.h
+test/test_newname.o: newname.h basename.h
 test/test_path.o: basename.h
