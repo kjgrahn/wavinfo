@@ -30,8 +30,10 @@
 
 #include <algorithm>
 #include <cstring>
+#include <cstdio>
 #include <cctype>
 #include <cassert>
+#include <ctime>
 
 
 namespace {
@@ -55,10 +57,50 @@ namespace {
 	return p;
     }
 
-    std::string name(const std::string& date,
+    struct Date {
+	explicit Date(time_t t);
+	explicit Date(const std::string& date);
+	unsigned yy;
+	unsigned mm;
+	unsigned dd;
+	std::string str() const;
+    };
+
+
+    Date::Date(time_t t)
+    {
+	const tm* tt = std::localtime(&t);
+	yy = tt->tm_year % 100;
+	mm = tt->tm_mon + 1;
+	dd = tt->tm_mday;
+    }
+
+
+    Date::Date(const std::string& date)
+    {
+	assert(date.size()==4+3+3);
+	assert(date[4]=='-');
+	assert(date[7]=='-');
+	const char* const p = date.c_str();
+	yy = strtoul(p+2, 0, 10);
+	mm = strtoul(p+5, 0, 10);
+	dd = strtoul(p+8, 0, 10);
+    }
+
+
+    std::string Date::str() const
+    {
+	char buf[2+3+3+1];
+	std::sprintf(buf, "%02u-%02u-%02u",
+		     yy, mm, dd);
+	return buf;
+    }
+
+
+    std::string name(const Date& date,
 		     const std::string& s)
     {
-	std::string r = date;
+	std::string r = date.str();
 	r.push_back('-');
 
 	const char* p = s.c_str();
@@ -69,12 +111,19 @@ namespace {
 
 	return r;
     }
+
+
+    std::string newname(const Date& date, const std::string& path)
+    {
+	const std::string dir = path::dirname(path);
+	return path::join(dir, name(date, path::basename(path)));
+    }
 }
 
 
-std::string newname(time_t, const std::string& path)
+std::string newname(time_t t, const std::string& path)
 {
-    return path;
+    return newname(Date(t), path);
 }
 
 
@@ -86,14 +135,5 @@ std::string newname(time_t, const std::string& path)
  */
 std::string newname(const std::string& date, const std::string& path)
 {
-    assert(date.size()==4+3+3);
-    assert(date[4]=='-');
-    assert(date[7]=='-');
-    std::string dat;
-    dat.append(date, 2, 2);
-    dat.append(date, 5, 2);
-    dat.append(date, 8, 2);
-
-    const std::string dir = path::dirname(path);
-    return path::join(dir, name(dat, path::basename(path)));
+    return newname(Date(date), path);
 }

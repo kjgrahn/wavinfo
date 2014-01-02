@@ -31,7 +31,7 @@
 #include <ctime>
 #include <string>
 
-std::string newname(time_t, const std::string& path);
+std::string newname(time_t t, const std::string& path);
 std::string newname(const std::string& date, const std::string& path);
 
 #endif
