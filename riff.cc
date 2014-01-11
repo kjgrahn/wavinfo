@@ -114,12 +114,11 @@ Wave riff(std::istream& is)
 	}
 	else if(tl.tag=="data") {
 	    w.datasize += tl.len;
-	    is.ignore(n);
+	    is.seekg(n, std::ios_base::cur);
 	}
 	else {
 	    is.ignore(n);
 	}
-	assert(is.gcount()==std::streamsize(n));
 	assert(len >= n);
 	len -= n;
     }
