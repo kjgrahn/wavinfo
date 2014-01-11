@@ -91,7 +91,7 @@ namespace {
     std::string Date::str() const
     {
 	char buf[2+3+3+1];
-	std::sprintf(buf, "%02u-%02u-%02u",
+	std::sprintf(buf, "%02u%02u%02u",
 		     yy, mm, dd);
 	return buf;
     }
@@ -101,12 +101,14 @@ namespace {
 		     const std::string& s)
     {
 	std::string r = date.str();
-	r.push_back('-');
 
 	const char* p = s.c_str();
 	const char* q = find_last(p, p + s.size(), '.');
 	p = digits(p, q);
-	r.append(p, q);
+	if(p!=q) {
+	    r.push_back('-');
+	    r.append(p, q);
+	}
 	r.append(".wav");
 
 	return r;

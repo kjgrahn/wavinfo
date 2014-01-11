@@ -45,7 +45,7 @@ namespace {
 	using path::basename;
 
 	return dirname(a)==dirname(b)
-	    && basename(a)==dirname(b);
+	    && basename(a)==basename(b);
     }
 }
 

@@ -40,6 +40,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <errno.h>
+#include <string.h>
 
 
 namespace {
@@ -143,10 +145,17 @@ int main(int argc, char ** argv)
 	const char* const filename = *p++;
 
 	std::ifstream is(filename);
+	if(!is) {
+	    std::cerr << filename << ": "
+		      << strerror(errno) << '\n';
+	    rc = 1;
+	    continue;
+	}
 	const Wave w = riff(is);
 
 	if(!w.valid()) {
 	    std::cerr << filename << ": not a WAVE file\n";
+	    rc = 1;
 	    continue;
 	}
 
