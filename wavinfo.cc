@@ -44,6 +44,13 @@
 #include <string.h>
 
 
+extern "C" {
+    const char* wavinfo_name();
+    const char* wavinfo_version();
+    const char* wavinfo_prefix();
+}
+
+
 namespace {
 
     time_t mtime(const char* filename)
@@ -113,8 +120,8 @@ int main(int argc, char ** argv)
 	    rename = true;
 	    break;
 	case 'V':
-	    std::cout << prog << " 1.0\n"
-		      << "Copyright (c) 2013 Jörgen Grahn\n";
+	    std::cout << prog << ' ' << wavinfo_version() << '\n'
+		      << "Copyright (c) 2013, 2014 Jörgen Grahn\n";
 	    return 0;
 	    break;
 	case 'H':

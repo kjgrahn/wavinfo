@@ -1,5 +1,6 @@
 wavinfo
 tests
 test.cc
+version.c
 *.[oa]
 Makefile.bak
