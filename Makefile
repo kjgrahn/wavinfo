@@ -10,16 +10,12 @@ all: wavinfo
 all: wavinfo.1
 all: tests
 
-version.c: Makefile mkversion
-	./mkversion wavinfo_{name=wavinfo,version=1.0,prefix=$(INSTALLBASE)} $@
-
 libwavinfo.a: riff.o
 libwavinfo.a: fmt.o
 libwavinfo.a: bext.o
 libwavinfo.a: newname.o
 libwavinfo.a: basename.o
 libwavinfo.a: mv.o
-libwavinfo.a: version.o
 	$(AR) -r $@ $^
 
 wavinfo: wavinfo.o libwavinfo.a
@@ -61,7 +57,6 @@ clean:
 	$(RM) wavinfo tests
 	$(RM) test.cc
 	$(RM) *.o test/*.o lib*.a
-	$(RM) version.c
 	$(RM) -r dep
 
 love:
