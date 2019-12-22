@@ -21,8 +21,7 @@ libwavinfo.a: mv.o
 wavinfo: wavinfo.o libwavinfo.a
 	$(CXX) $(CXXFLAGS) -o $@ $< -L. -lwavinfo
 
-CFLAGS=-W -Wall -pedantic -ansi -g -Os
-CXXFLAGS=-W -Wall -pedantic -std=c++98 -g -Os
+CXXFLAGS=-W -Wall -pedantic -std=c++11 -g -Os
 
 .PHONY: check checkv
 check: tests
