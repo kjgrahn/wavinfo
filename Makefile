@@ -56,29 +56,31 @@ tags: TAGS
 TAGS:
 	etags *.{c,h,cc}
 
-.PHONY: depend
-depend:
-	makedepend -- -I. -- -Y -I. *.{c,cc} test/*.cc
-
 .PHONY: clean
 clean:
 	$(RM) wavinfo tests
 	$(RM) test.cc
 	$(RM) *.o test/*.o lib*.a
 	$(RM) version.c
-	$(RM) Makefile.bak
+	$(RM) -r dep
 
 love:
 	@echo "not war?"
 
-# DO NOT DELETE
+$(shell mkdir -p dep/test)
+DEPFLAGS=-MT $@ -MMD -MP -MF dep/$*.Td
+COMPILE.cc=$(CXX) $(DEPFLAGS) $(CXXFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
+COMPILE.c=$(CC) $(DEPFLAGS) $(CFLAGS) $(CPPFLAGS) $(TARGET_ARCH) -c
 
-basename.o: basename.h
-bext.o: bext.h littleendian.h
-fmt.o: fmt.h littleendian.h
-mv.o: mv.h basename.h
-newname.o: newname.h basename.h
-riff.o: riff.h littleendian.h fmt.h
-wavinfo.o: riff.h fmt.h bext.h newname.h basename.h mv.h
-test/test_newname.o: newname.h basename.h
-test/test_path.o: basename.h
+%.o: %.cc
+	$(COMPILE.cc) $(OUTPUT_OPTION) $<
+	@mv dep/$*.{Td,d}
+
+%.o: %.c
+	$(COMPILE.c) $(OUTPUT_OPTION) $<
+	@mv dep/$*.{Td,d}
+
+dep/%.d: ;
+dep/test/%.d: ;
+-include dep/*.d
+-include dep/test/*.d

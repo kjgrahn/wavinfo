@@ -4,3 +4,4 @@ test.cc
 version.c
 *.[oa]
 Makefile.bak
+dep/
