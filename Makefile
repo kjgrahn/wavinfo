@@ -35,7 +35,7 @@ checkv: tests
 	valgrind -q ./tests -v
 
 test.cc: libtest.a
-	testicle -o$@ $^
+	orchis -o$@ $^
 
 tests: test.o libwavinfo.a libtest.a
 	$(CXX) -o $@ test.o -L. -ltest -lwavinfo

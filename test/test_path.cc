@@ -6,7 +6,7 @@
  */
 #include <basename.h>
 
-#include <testicle.h>
+#include <orchis.h>
 
 namespace split {
 
@@ -14,13 +14,13 @@ namespace split {
 		      const char* const b, const char* const c)
     {
 	const char* const a0 = a.c_str();
-	testicle::assert_eq(path::dirname(a),  b);
-	testicle::assert_eq(path::dirname(a0), b);
-	testicle::assert_eq(path::basename(a),  c);
-	testicle::assert_eq(path::basename(a0), c);
+	orchis::assert_eq(path::dirname(a),  b);
+	orchis::assert_eq(path::dirname(a0), b);
+	orchis::assert_eq(path::basename(a),  c);
+	orchis::assert_eq(path::basename(a0), c);
     }
 
-    using testicle::TC;
+    using orchis::TC;
 
     void empty(TC)
     {
@@ -68,12 +68,12 @@ namespace split {
 
 namespace join {
 
-    using testicle::TC;
+    using orchis::TC;
 
     void assert_joins(const std::string& a,
 		      const char* const b, const char* const c)
     {
-	testicle::assert_eq(a, path::join(b, c));
+	orchis::assert_eq(a, path::join(b, c));
     }
 
     void test(TC)

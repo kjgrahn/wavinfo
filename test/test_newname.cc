@@ -7,28 +7,29 @@
 #include <newname.h>
 #include <basename.h>
 
-#include <testicle.h>
+#include <orchis.h>
 
+using orchis::TC;
 
 namespace name_date {
 
     void assert2014(const char* orig, const char* s)
     {
 	const std::string s2 = newname("2014-01-01", orig);
-	testicle::assert_eq(path::basename(s2), s);
+	orchis::assert_eq(path::basename(s2), s);
     }
 
-    void simple(testicle::TC)
+    void simple(TC)
     {
 	assert2014("zoom0007.wav", "140101-0007.wav");
     }
 
-    void ucase(testicle::TC)
+    void ucase(TC)
     {
 	assert2014("zoom0007.WAV", "140101-0007.wav");
     }
 
-    void extension(testicle::TC)
+    void extension(TC)
     {
 	assert2014("zoom0007.foo", "140101-0007.wav");
 	assert2014("zoom0007.",    "140101-0007.wav");
@@ -38,7 +39,7 @@ namespace name_date {
 	assert2014(".zoom0007.fo", "140101-0007.wav");
     }
 
-    void digits(testicle::TC)
+    void digits(TC)
     {
 	assert2014("zoom0007.wav", "140101-0007.wav");
 	assert2014("zoom007.wav", "140101-007.wav");
@@ -47,7 +48,7 @@ namespace name_date {
 	assert2014("zoom0.wav", "140101-0.wav");
     }
 
-    void no_digits(testicle::TC)
+    void no_digits(TC)
     {
 	assert2014("zoom.wav", "140101.wav");
     }
@@ -59,13 +60,13 @@ namespace name_path {
     void assert2014(const char* orig, const char* s)
     {
 	const std::string s2 = newname("2014-01-01", orig);
-	testicle::assert_eq(path::dirname(s2),
+	orchis::assert_eq(path::dirname(s2),
 			    path::dirname(s));
-	testicle::assert_eq(path::basename(s2),
+	orchis::assert_eq(path::basename(s2),
 			    path::basename(s));
     }
 
-    void simple(testicle::TC)
+    void simple(TC)
     {
 	assert2014("zoom0007.wav", "./140101-0007.wav");
 	assert2014("/zoom0007.wav", "/140101-0007.wav");
